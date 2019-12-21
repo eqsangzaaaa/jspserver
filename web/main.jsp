@@ -46,10 +46,7 @@
                 
                
         %>
-        <%! 
-            
-        
-        %>
+       
         
           
         <% 
@@ -78,19 +75,19 @@ try {
                 String temptime_stop;
                 String temproom ;
                 String finalroom = "a";
-                String local_x="no";
+                String roomnumber="no";
                 String local_y="no";
                 String local_z="no";
                 
 		
-                
+                 System.out.println("tempasd"+temp);
                 if(temp == "0"){
                     sql = "SELECT * FROM  room WHERE id_room like '%" +  strtext + "%' " ;
                     rs = st.executeQuery(sql);
+                    System.out.println("tempasd");
                     while((rs!=null) && (rs.next())) { 
-                            local_x = rs.getString("local_x");
-                            local_y = rs.getString("local_y");
-                            local_z = rs.getString("local_z");
+                            roomnumber = rs.getString("id_room");
+                           
                             
                         }
                 }
@@ -138,9 +135,8 @@ try {
                        rs = st.executeQuery(sql);
                         
                             while((rs!=null) && (rs.next())) { 
-                                local_x = rs.getString("local_x");
-                                local_y = rs.getString("local_y");
-                                local_z = rs.getString("local_z");
+                                roomnumber = rs.getString("id_room");
+                                
                              }
                        
                 }
@@ -150,9 +146,8 @@ try {
                 %>
                 
 			<%
-                      out.println("x="+local_x);
-                      out.println("y="+local_y);
-                      out.println("z="+local_z);
+                      out.println("x="+roomnumber);
+                     
                         
                         %>
 				 
