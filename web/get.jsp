@@ -122,16 +122,22 @@
                             finalroom = temproom;
                         }else if (Hrs == start_hr) {
                             if (Mins >= start_min) {
-                                   
+                                  
                                 finalroom = temproom;
                             }
                         }else if (Hrs == stop_hr) {
                             if (Mins <= stop_min) {
-                             
+                                
                                 finalroom = temproom;
                             }
-                        }
+                            
+                        }else if(Hrs < 8 || Hrs > 15){
+                            
                             finalroom = "0000";
+                        }else if(Hrs>=8 || Hrs <= 15){
+                             finalroom = "1111";   
+                        }
+                            
  
                     }
                    temprs.close();
@@ -158,6 +164,7 @@
             outx.close();
             out.println("room=" + finalroom);
             strtext = "wait";
+            finalroom = "There are no rooms you are looking for";
             TimeUnit.SECONDS.sleep(2);
             response.sendRedirect("output.json");
             System.out.println("-----------------------------");
