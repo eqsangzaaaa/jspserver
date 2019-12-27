@@ -25,7 +25,7 @@
         <title>search text</title>
 
     </head>
-     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <body>
         <h1>Result</h1>
         <%!
@@ -36,8 +36,9 @@
             String strRssi1 = "0";
             String strRssi2 = "0";
             String strRssi3 = "0";
-            String type = "0";
            
+            String temp = "0";
+
             String sql;
             ResultSet rs;
             ResultSet temprs;
@@ -45,13 +46,18 @@
             String temptime_stop;
             String temproom;
             String finalroom = "There are no rooms you are looking for";
-           
+             
+            
         %>
 
         <%
+             if(strtext == "none"){
+                 System.out.println("start server");
+             }
             //String strtext = "ลือพล";
             //String strday = "Monday";
             //String starttime = "15:00";
+            int type = 0;
             if (strtext == "wait") {
                 strtext = request.getParameter("text");
                 strday = request.getParameter("day");
@@ -59,28 +65,27 @@
                 strRssi1 = request.getParameter("rssi1");
                 strRssi2 = request.getParameter("rssi2");
                 strRssi3 = request.getParameter("rssi3");
-                type = request.getParameter("type");
+                temp = request.getParameter("type");
             }
-
+            type = Integer.parseInt(temp);
+          
             out.println("<br>");
             String[] fulltimestart = starttime.split(":");
             System.out.println("fulltime= " + fulltimestart[0]);
             System.out.println("fulltime= " + fulltimestart[1]);
             int Hrs = Integer.parseInt(fulltimestart[0]);
             int Mins = Integer.parseInt(fulltimestart[1]);
-           
-
+                
 
         %>
-        
-        <%  
-            Connection connect = null;
+
+        <%            Connection connect = null;
             Statement st = null;
 
             try {
                 Class.forName("org.postgresql.Driver");
 
-                connect = DriverManager.getConnection("jdbc:postgresql://localhost:5432/alldata","q", "");
+                connect = DriverManager.getConnection("jdbc:postgresql://localhost:5432/alldata", "q", "");
                 if (connect != null) {
 
                 } else {
@@ -90,8 +95,10 @@
 
                 st = connect.createStatement();
 
-               
-                if (type == "1") {
+                
+
+                if (temp == "1") {
+                     System.out.println("type=" + type);
                     sql = "SELECT * FROM  room WHERE id_room like '%" + strtext + "%' ";
                     rs = st.executeQuery(sql);
 
@@ -99,64 +106,60 @@
                         finalroom = rs.getString("id_room");
 
                     }
-                    rs.close ();
-                } else {
+
+                } else if (temp == "2") {
+                     System.out.println("type=" + type);
                     sql = "SELECT * FROM Timetable WHERE day like'%" + strday + "%' AND id_teacher IN (SELECT id_teacher FROM teacher WHERE aka like '%" + strtext + "%')";
                     temprs = st.executeQuery(sql);
                     int i = 0;
                     while ((temprs != null) && (temprs.next())) {
-
                         temproom = temprs.getString("id_room");
                         temptime_start = temprs.getString("time_start");
                         temptime_stop = temprs.getString("time_stop");
                         String[] temptimestart = temptime_start.split(":");
                         String[] temptimestop = temptime_stop.split(":");
-                        
+
                         int start_hr = Integer.parseInt(temptimestart[0]);
                         int start_min = Integer.parseInt(temptimestart[1]);
                         int stop_hr = Integer.parseInt(temptimestop[0]);
                         int stop_min = Integer.parseInt(temptimestop[1]);
 
                         if (Hrs > start_hr && Hrs < stop_hr) {
-                               
+
                             finalroom = temproom;
-                        }else if (Hrs == start_hr) {
+                        } else if (Hrs == start_hr) {
                             if (Mins >= start_min) {
-                                  
+
                                 finalroom = temproom;
                             }
-                        }else if (Hrs == stop_hr) {
+                        } else if (Hrs == stop_hr) {
                             if (Mins <= stop_min) {
-                                
+
                                 finalroom = temproom;
                             }
-                            
-                        }else if(Hrs < 8 || Hrs > 15){
-                            
+
+                        } else if (Hrs < 8 || Hrs > 15) {
+
                             finalroom = "0000";
-                        }else if(Hrs>=8 || Hrs <= 15){
-                             finalroom = "1111";   
+                        } else if (Hrs >= 8 || Hrs <= 15) {
+                            finalroom = "1111";
                         }
-                            
- 
+
                     }
-                   temprs.close();
 
                 }
-                
-                 System.out.println("roomfind =  " + finalroom);
-
-
+               
+                System.out.println("roomfind =  " + finalroom);
         %>
 
-        <%  
-             JSONArray jArray = new JSONArray();
+        <%
+            JSONArray jArray = new JSONArray();
             JSONObject arrayObj = new JSONObject();
-            
+
             arrayObj.put("room", finalroom);
-            
+
             jArray.add(arrayObj);
-            
+
             Writer outx = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("/Users/q/NetBeansProjects/WebApplication/web/output.json")), StandardCharsets.UTF_8));
 
             outx.write(jArray.toJSONString());
@@ -169,12 +172,10 @@
             response.sendRedirect("output.json");
             System.out.println("-----------------------------");
 
-            
+
         %>
 
-        <%
-            
-            } catch (Exception e) {
+        <%            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 out.println(e.getMessage());
                 e.printStackTrace();
