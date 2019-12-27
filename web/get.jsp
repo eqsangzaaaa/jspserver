@@ -73,6 +73,7 @@
             String[] fulltimestart = starttime.split(":");
             System.out.println("fulltime= " + fulltimestart[0]);
             System.out.println("fulltime= " + fulltimestart[1]);
+            System.out.println("type = " + type);
             int Hrs = Integer.parseInt(fulltimestart[0]);
             int Mins = Integer.parseInt(fulltimestart[1]);
                 
@@ -97,8 +98,8 @@
 
                 
 
-                if (temp == "1") {
-                     System.out.println("type=" + type);
+                if (type == 1) {
+                     //System.out.println("type=" + type);
                     sql = "SELECT * FROM  room WHERE id_room like '%" + strtext + "%' ";
                     rs = st.executeQuery(sql);
 
@@ -107,8 +108,8 @@
 
                     }
 
-                } else if (temp == "2") {
-                     System.out.println("type=" + type);
+                } else if (type == 2) {
+                     //System.out.println("type=" + type);
                     sql = "SELECT * FROM Timetable WHERE day like'%" + strday + "%' AND id_teacher IN (SELECT id_teacher FROM teacher WHERE aka like '%" + strtext + "%')";
                     temprs = st.executeQuery(sql);
                     int i = 0;
