@@ -4,6 +4,8 @@
     Author     : q
 --%>
 
+<%@page import="java.util.List"%>
+<%@page import="java.util.Arrays"%>
 <%@page import="java.text.DecimalFormat"%>
 <%@page import="java.util.concurrent.TimeUnit"%>
 <%@page import="java.util.regex.Pattern"%>
@@ -212,9 +214,10 @@
                 double[] array_ima = new double[1000];
                 double ac, as;
                 double inx = 0;
+                int cg = 0;
 
                 if (zone == 1) {
-
+                    cg = 4;
                     if (rssi > 75) {
                         rssi = rssi - 75;
                         rssi = rssi / 4;
@@ -240,8 +243,57 @@
                 double diruse;
                 int str = 1, i = 0;
 
-                if (zone == 3) {
+                if (zone == 2) {
+                    String[] roomleft = {"625", "6181", "619", "6182", "621"};
+                    cg = 3;
+                    /* if (rssi > 30) {
+                        rssi = rssi - 30;
+                        rssi = rssi / 30;
+                        System.out.println("rssis=" + rssi);
+                        inx = inx + rssi;
+                    } else if (rssi <= 30) {
+                        rssi = rssi - 30;
+                        rssi = (rssi / 30) * (-1);
+                        System.out.println("rssis=" + rssi);
+                        inx = inx + rssi;
+                    }*/
+                    // Convert String Array to List
+                    List<String> list = Arrays.asList(roomleft);
+                    if (list.contains(finalroom)) {
+                        cg = 2;
+                        double[] x1t = {0, 1};
+                        double[] x2t = {0, 7.5};
+                        double[] z1t = {0, -16 + inx};
+                        double[] z2t = {-15 + inx, -30 + inx};
+                        double[] dircngt = {0, -17};
+                        int startdirt = 340;
+                        x1 = x1t;
+                        x2 = x2t;
+                        z1 = z1t;
+                        z2 = z2t;
+                        dircng = dircngt;
+                        startdir = startdirt;
+                    } else {
 
+                        double[] x1t = {0, -0.25, -24.25};
+                        double[] x2t = {0, -19.25, -24.25};
+                        double[] z1t = {0 + inx, -19.2 + inx, -25.2 + inx};
+                        double[] z2t = {-19 + inx, -23.2 + inx, -30.2 + inx};
+                        double[] dircngt = {0, 60, 0};
+                        int startdirt = 160;
+
+                        x1 = x1t;
+                        x2 = x2t;
+                        z1 = z1t;
+                        z2 = z2t;
+                        dircng = dircngt;
+                        startdir = startdirt;
+                    }
+
+                }
+
+                if (zone == 3) {
+                    cg = 4;
                     if (rssi > 75) {
                         rssi = rssi - 75;
                         rssi = rssi / 4;
@@ -274,7 +326,7 @@
 
                 }
 
-                for (int g = 0; g < 4; g++) {
+                for (int g = 0; g < cg; g++) {
                     diruse = direct;
                     System.out.println("g = " + (g + 1));
                     diruse = direct + startdir + dircng[g];
@@ -312,21 +364,18 @@
                     array_x[0] = x1[0];
                     array_z[0] = z1[0];
                     array_y[0] = y;
-                    array_ima[0]=1;
 
-                    for (int j = 0; j < ra; j++) {
+                    for (int j = 1; j < ra; j++) {
 
                         array_x[str] = array_x[str - 1] + xn;
                         array_z[str] = array_z[str - 1] + zn;
                         array_y[str] = y;
-                        array_ima[str]=1+g;
+
                         System.out.print(j + 1 + " | ");
                         System.out.print(array_x[str]);
                         System.out.print(" == ");
                         System.out.print(array_z[str]);
-                        System.out.print("|");
-                        System.out.print(array_ima[str]);
-                        System.out.println("");
+                        System.out.print("\n");
 
                         str++;
                         i++;
@@ -338,9 +387,9 @@
                 }
 
                 if (locate == 0) {
-                    array_x[0] = 999;
-                    array_y[0] = 999;
-                    array_z[0] = 999;
+                    array_x[0] = 0;
+                    array_y[0] = -1;
+                    array_z[0] = -1;
 
                     locate = 1;
                 }
@@ -351,10 +400,17 @@
             JSONArray jArray = new JSONArray();
             while (k < locate) {
                 JSONObject arrayObj = new JSONObject();
+                if (k + 1 == locate) {
+                    arrayObj.put("r", finalroom);
+                } else if (locate == 1) {
+                    arrayObj.put("r", "0000");
+                } else {
+                    arrayObj.put("r", "0");
+                }
+
                 arrayObj.put("x", array_x[k]);
                 arrayObj.put("y", array_y[k]);
                 arrayObj.put("z", array_z[k]);
-                //arrayObj.put("ima", array_ima[k]);
                 jArray.add(arrayObj);
                 k++;
 
