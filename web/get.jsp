@@ -41,10 +41,7 @@
             double rssi = 0;
             int zone = 0;
             double direct = 0;
-            ;
-
             String temp = "0";
-
             String sql;
             ResultSet rs;
             ResultSet temprs;
@@ -55,18 +52,12 @@
             String temproom;
             String finalroom = "There are no rooms you are looking for";
             String result = "none";
-
-
         %>
 
         <%
-
             if (strtext == "none") {
                 System.out.println("start server");
             }
-            //String strtext = "ลือพล";
-            //String strday = "Monday";
-            //String starttime = "15:00";
             int type = 0;
             if (strtext == "wait") {
                 strtext = request.getParameter("text");
@@ -80,7 +71,6 @@
             type = Integer.parseInt(temp);
             zone = Integer.parseInt(strzone);
             rssi = Double.parseDouble(strRssi);
-
             out.println("<br>");
             String[] fulltimestart = starttime.split(":");
             System.out.println("fulltime= " + fulltimestart[0]);
@@ -91,13 +81,10 @@
             System.out.println("direct = " + direct);
             int Hrs = Integer.parseInt(fulltimestart[0]);
             int Mins = Integer.parseInt(fulltimestart[1]);
-
-
         %>
 
         <%            Connection connect = null;
             Statement st = null;
-
             try {
                 Class.forName("org.postgresql.Driver");
 
@@ -108,7 +95,6 @@
                     System.out.println("Database Connect Failed.");
                     out.println("Database Connect Failed.");
                 }
-
                 st = connect.createStatement();
 
                 if (type == 1) {
@@ -118,7 +104,6 @@
 
                     while ((rs != null) && (rs.next())) {
                         finalroom = rs.getString("id_room");
-
                     }
 
                 } else if (type == 2) {
@@ -126,9 +111,7 @@
                     sql = "SELECT * FROM Timetable WHERE day like'%" + strday + "%' AND id_teacher IN (SELECT id_teacher FROM teacher WHERE aka like '%" + strtext + "%')";
                     temprs = st.executeQuery(sql);
                     int status = 0;
-
                     while ((temprs != null) && (temprs.next())) {
-
                         status = 1;
                         temproom = temprs.getString("id_room");
                         temptime_start = temprs.getString("time_start");
@@ -140,61 +123,51 @@
                         int start_min = Integer.parseInt(temptimestart[1]);
                         int stop_hr = Integer.parseInt(temptimestop[0]);
                         int stop_min = Integer.parseInt(temptimestop[1]);
-
                         if (Hrs > start_hr && Hrs < stop_hr) {
-
                             finalroom = temproom;
                         } else if (Hrs == start_hr) {
                             if (Mins >= start_min) {
-
                                 finalroom = temproom;
                             }
                         } else if (Hrs == stop_hr) {
                             if (Mins <= stop_min) {
-
                                 finalroom = temproom;
                             }
-
                         } else if (Hrs < 8 || Hrs > 15) {
-
                             finalroom = "0000";
                         } else if (Hrs >= 8 || Hrs <= 15) {
                             finalroom = "1111";
                         }
-
                     }
                     if (status == 0) {
                         if (Hrs < 8 || Hrs > 15) {
-
                             finalroom = "0000";
                         } else if (Hrs >= 8 || Hrs <= 15) {
                             finalroom = "1111";
                         }
                     }
-
                 }
                 System.out.println("roomfind =  " + finalroom);
                 switch (zone) {
-
                     case 1://ห้องแลป
-                        sql = "SELECT locate_1 FROM  room WHERE id_room like '%" + finalroom + "%' ";
+                        sql = "SELECT locate1 FROM  room WHERE id_room like '%" + finalroom + "%' ";
                         results = st.executeQuery(sql);
                         while ((results != null) && (results.next())) {
-                            locate = Integer.parseInt(results.getString("locate_1"));
+                            locate = Integer.parseInt(results.getString("locate1"));
                         }
                         break;
                     case 2://ทางเดิน
-                        sql = "SELECT locate_2 FROM  room WHERE id_room like '%" + finalroom + "%' ";
+                        sql = "SELECT locate2 FROM  room WHERE id_room like '%" + finalroom + "%' ";
                         results = st.executeQuery(sql);
                         while ((results != null) && (results.next())) {
-                            locate = Integer.parseInt(results.getString("locate_2"));
+                            locate = Integer.parseInt(results.getString("locate2"));
                         }
                         break;
                     case 3://ห้องอาจารย์
-                        sql = "SELECT locate_3 FROM  room WHERE id_room like '%" + finalroom + "%' ";
+                        sql = "SELECT locate3 FROM  room WHERE id_room like '%" + finalroom + "%' ";
                         results = st.executeQuery(sql);
                         while ((results != null) && (results.next())) {
-                            locate = Integer.parseInt(results.getString("locate_3"));
+                            locate = Integer.parseInt(results.getString("locate3"));
                         }
                         break;
                     default:
@@ -206,12 +179,13 @@
                 //mark arrow
                 int r = 0;
                 double x = 0;
-                double y = -1;
-                //double z=0;
+                double y = -2;
                 double[] array_x = new double[1000];
                 double[] array_y = new double[1000];
                 double[] array_z = new double[1000];
-                double[] array_ima = new double[1000];
+                double[] a = new double[1000];
+                double[] b = new double[1000];
+                double[] c = new double[1000];
                 double ac, as;
                 double inx = 0;
                 int cg = 0;
@@ -221,19 +195,15 @@
                     if (rssi > 75) {
                         rssi = rssi - 75;
                         rssi = rssi / 4;
-                        System.out.println("rssis=" + rssi);
                         inx = inx + rssi;
                     } else if (rssi < 75) {
                         rssi = rssi - 75;
                         rssi = (rssi / 4) * (-1);
-                        System.out.println("rssis=" + rssi);
                         inx = inx - rssi;
                     } else {
                         inx = 0;
                     }
-                    System.out.println("inxzone1=" + inx);
                 }
-
                 double[] x1 = {0 + inx, -0.25 + inx, -8 + inx, -28 + inx};
                 double[] x2 = {0 + inx, -7 + inx, -27 + inx, -29.75 + inx};
                 double[] z1 = {0, -16, -43.4, -47.6};
@@ -246,17 +216,6 @@
                 if (zone == 2) {
                     String[] roomleft = {"625", "6181", "619", "6182", "621"};
                     cg = 3;
-                    /* if (rssi > 30) {
-                        rssi = rssi - 30;
-                        rssi = rssi / 30;
-                        System.out.println("rssis=" + rssi);
-                        inx = inx + rssi;
-                    } else if (rssi <= 30) {
-                        rssi = rssi - 30;
-                        rssi = (rssi / 30) * (-1);
-                        System.out.println("rssis=" + rssi);
-                        inx = inx + rssi;
-                    }*/
                     // Convert String Array to List
                     List<String> list = Arrays.asList(roomleft);
                     if (list.contains(finalroom)) {
@@ -274,7 +233,6 @@
                         dircng = dircngt;
                         startdir = startdirt;
                     } else {
-
                         double[] x1t = {0, -0.25, -24.25};
                         double[] x2t = {0, -19.25, -24.25};
                         double[] z1t = {0 + inx, -19.2 + inx, -25.2 + inx};
@@ -297,17 +255,17 @@
                     if (rssi > 75) {
                         rssi = rssi - 75;
                         rssi = rssi / 4;
-                        System.out.println("rssis=" + rssi);
+                        //System.out.println("rssis=" + rssi);
                         inx = inx + rssi;
                     } else if (rssi < 75) {
                         rssi = rssi - 75;
                         rssi = (rssi / 4) * (-1);
-                        System.out.println("rssis=" + rssi);
+                        //System.out.println("rssis=" + rssi);
                         inx = inx - rssi;
                     } else {
                         inx = 0;
                     }
-                    System.out.println("inxzone3=" + inx);
+                    // System.out.println("inxzone3=" + inx);
 
                     //บวกแกนx เลื่อนนไปข้างหน้า
                     double[] x1t = {0 + inx, -1 + inx, -15 + inx, -14.75 + inx};
@@ -335,10 +293,9 @@
                     }
                     System.out.println("drict2 = " + diruse);
                     double angle = diruse;
+                    System.out.println("angle = " + angle);
 
                     double an = Math.toRadians(angle);
-                    System.out.println("an=" + an + " cos " + Math.round(Math.cos(an)) + " cos" + Math.cos(an));
-                    System.out.println("an=" + an + " sin " + Math.round(Math.sin(an)) + " sin" + Math.sin(an));
                     double ra = Math.sqrt(Math.pow((x1[g] - x2[g]), 2) + Math.pow(z1[g] - z2[g], 2));
 
                     if (angle == 0 || angle == 180 || angle == 90 || angle == 270 || angle == 360) {
@@ -364,19 +321,25 @@
                     array_x[0] = x1[0];
                     array_z[0] = z1[0];
                     array_y[0] = y;
-
+                    if (g == 0) {
+                        b[0] = (Math.PI / 180) * (angle);
+                        System.out.println("***** b =  " + angle + " B[0] =" + b[0]);
+                    }
+                    a[0] = 0;
+                    c[0] = 0;
                     for (int j = 1; j < ra; j++) {
 
                         array_x[str] = array_x[str - 1] + xn;
                         array_z[str] = array_z[str - 1] + zn;
                         array_y[str] = y;
-
-                        System.out.print(j + 1 + " | ");
+                        a[str] = 0;
+                        b[str] = (Math.PI / 180) * (angle);
+                        c[str] = 0;
+                        /*System.out.print(j + 1 + " | ");
                         System.out.print(array_x[str]);
                         System.out.print(" == ");
                         System.out.print(array_z[str]);
-                        System.out.print("\n");
-
+                        System.out.print("\n");*/
                         str++;
                         i++;
                     }
@@ -384,18 +347,48 @@
                     System.out.println(i);
                     array_x[0] = x1[0];
                     array_z[0] = z1[0];
+
                 }
+                switch (zone) {
 
-                if (locate == 0) {
-                    array_x[0] = 0;
-                    array_y[0] = -1;
-                    array_z[0] = -1;
-
-                    locate = 1;
+                    case 1:
+                        String s1 = "1111";
+                        if (finalroom.equals(s1)) {
+                            locate = i;
+                        } else if (locate == 0) {
+                            array_x[0] = 0;
+                            array_y[0] = -1;
+                            array_z[0] = -1;
+                            locate = 1;
+                        }
+                        break;
+                    case 2:
+                        String s2 = "1111";
+                        String s22 = "625";
+                        if (finalroom.equals(s2) || finalroom.equals(s22)) {
+                            locate = i;
+                        } else if (locate == 0) {
+                            array_x[0] = 0;
+                            array_y[0] = -1;
+                            array_z[0] = -1;
+                            locate = 1;
+                        }
+                        break;
+                    case 3:
+                        String s3 = "625";
+                        if (finalroom.equals(s3)) {
+                            locate = i;
+                        } else if (locate == 0) {
+                            array_x[0] = 0;
+                            array_y[0] = -1;
+                            array_z[0] = -1;
+                            locate = 1;
+                        }
+                        break;
                 }
-
         %>
         <%            System.out.println("total node=" + locate);
+
             int k = 0;
             JSONArray jArray = new JSONArray();
             while (k < locate) {
@@ -411,6 +404,9 @@
                 arrayObj.put("x", array_x[k]);
                 arrayObj.put("y", array_y[k]);
                 arrayObj.put("z", array_z[k]);
+                arrayObj.put("a", a[k]);
+                arrayObj.put("b", b[k]);
+                arrayObj.put("c", c[k]);
                 jArray.add(arrayObj);
                 k++;
 
