@@ -50,7 +50,7 @@ try {
 	}
         st = connect.createStatement();
 		
-		String sql = "SELECT name , aka FROM Teacher";
+		String sql = "SELECT name,aka,email FROM Teacher";
 		
 		ResultSet rs = st.executeQuery(sql);
                  int i=0;
@@ -59,15 +59,15 @@ try {
 
         String name = rs.getString("name");
         String aka = rs.getString("aka");
+        String email = rs.getString("email");
        
         
         JSONObject arrayObj = new JSONObject();
 
         arrayObj.put("aka",aka);
         arrayObj.put("name",name);
+        arrayObj.put("email", email);
         
-        
-
         jArray.add(i,arrayObj);
         i++;
         //out.println(jArray);
@@ -75,7 +75,7 @@ try {
         }
             rs.close ();
             
-        Writer outx = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("/Users/q/NetBeansProjects/WebApplication/web/jsondata.json")),  StandardCharsets.UTF_8));
+        Writer outx = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("/Users/q/NetBeansProjects/WebApplication/web/teacherjsondata.json")),  StandardCharsets.UTF_8));
         
         outx.write(jArray.toJSONString());
         outx.flush();
@@ -83,7 +83,7 @@ try {
   //----------------------------------------------------------------------------
   //out.print(jArray);
   TimeUnit.SECONDS.sleep(2);
-  response.sendRedirect("jsondata.json");
+  response.sendRedirect("teacherjsondata.json");
     
         
 		} catch (Exception e) {
